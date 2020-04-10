@@ -1,5 +1,6 @@
 from app.scenes.simulation_scene import SimulationScene
 from app.scenes.description_scene import DescriptionScene
+from app.scenes.thanks_scene import ThanksScene
 
 
 class Digits_1_DescriptionScene(DescriptionScene):
@@ -51,6 +52,9 @@ class Digits_4_SimulationScene(SimulationScene):
     }
 
 
+class ThanksScene(ThanksScene):
+    pass
+
 
 SCENES = [
     Digits_1_DescriptionScene,
@@ -60,5 +64,6 @@ SCENES = [
     Digits_3_DescriptionScene,
     Digits_3_SimulationScene,
     Digits_4_DescriptionScene,
-    Digits_4_SimulationScene
+    Digits_4_SimulationScene,
+    ThanksScene
 ]

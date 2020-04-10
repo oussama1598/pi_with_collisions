@@ -1,3 +1,4 @@
+from pydub import AudioSegment
 from manimlib.imports import *
 
 
@@ -10,6 +11,8 @@ class DescriptionScene(Scene):
         self._add_description()
 
     def construct(self):
+        self.file_writer.add_audio_segment(AudioSegment.silent(0))
+
         self.play(
             VFadeIn(self.text))
 

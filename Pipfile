@@ -19,6 +19,7 @@ ipython = "*"
 moderngl = "*"
 mapbox-earcut = "*"
 moderngl-window = "*"
+moviepy = "*"
 
 [dev-packages]
 autopep8 = "*"
