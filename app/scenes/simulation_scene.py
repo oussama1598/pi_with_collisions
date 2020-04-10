@@ -1,9 +1,11 @@
+import numpy as np
 from manimlib.imports import *
 from app.modules.simulation import Simulation
 
 
 class SimulationScene(Scene):
     CONFIG = {
+        'digits': 1,
         'include_sound': True,
         'collision_sound': 'clack_sound.wav',
         'min_time_between_sounds': 0.004,
@@ -31,6 +33,9 @@ class SimulationScene(Scene):
     }
 
     def setup(self):
+        self.simulation_config['blocks'][0]['mass'] = np.power(
+            100, self.digits - 1)
+
         self._add_simulation()
 
     def construct(self):

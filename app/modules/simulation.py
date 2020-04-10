@@ -3,6 +3,7 @@ import numpy as np
 from app.modules.wall import Wall
 from app.modules.floor import Floor
 from app.modules.block import Block
+from app.modules.graph import Graph
 
 
 class Simulation(VGroup):
@@ -24,7 +25,9 @@ class Simulation(VGroup):
                 'velocity': 0,
                 'distance': 3,
             }
-        ]
+        ],
+        'tick_frequency': 1,
+        'floor_tick_frequency': .5
     }
 
     def __init__(self, **kwargs):
@@ -57,13 +60,20 @@ class Simulation(VGroup):
         # add collision count text
         self._setup_collision_count_text()
 
+        # add the phase space graph
+        self._setup_phase_space_graph()
+
+        # Add the min axis to graph
+        self._setup_min_axis()
+
     def _setup_wall(self):
         self.wall = Wall(margin=self.scene_margin)
 
         self.add(self.wall)
 
     def _setup_floor(self):
-        self.floor = Floor(margin=self.scene_margin)
+        self.floor = Floor(margin=self.scene_margin,
+                           tick_frequency=self.floor_tick_frequency)
 
         self.add(self.floor)
 
@@ -85,7 +95,7 @@ class Simulation(VGroup):
         return block
 
     def _setup_collision_count_text(self):
-        self.counter_number = Integer(self.number_of_collisions)
+        self.counter_number = Integer(self.number_of_collisions, color=YELLOW)
 
         counter_label = TextMobject('Collision: ')
 
@@ -108,6 +118,36 @@ class Simulation(VGroup):
         )
 
         self.add(counter_group)
+
+    def _setup_phase_space_graph(self):
+        self.graph = Graph(
+            name='Position Phase Space',
+            width=FRAME_HEIGHT / 3,
+            height=FRAME_HEIGHT / 3,
+            y_min=0,
+            y_max=int(self.floor.get_width()),
+            x_min=0,
+            x_max=int(self.floor.get_width()),
+            y_axis_config={
+                'tick_frequency': self.tick_frequency
+            },
+            x_axis_config={
+                'tick_frequency': self.tick_frequency
+            }
+        )
+
+        self.graph.to_corner(UR)
+
+        self.add(self.graph)
+
+    def _setup_min_axis(self):
+        width = int(self.floor.get_width())
+        x_min_block1 = self.block2.get_width() / 2
+        x_min_block2 = self.block2.get_width() + self.block1.get_width() / 2
+
+        self.graph.add_line_at((0, x_min_block1), (width, x_min_block1))
+        self.graph.add_line_at(
+            (x_min_block2, 0), (width, width - x_min_block2))
 
     def _init_phase_point(self):
         block1, block2 = self.block1, self.block2
@@ -151,11 +191,8 @@ class Simulation(VGroup):
         s1 = reflected_point[0] / np.sqrt(block1.mass)
         s2 = reflected_point[1] / np.sqrt(block2.mass)
 
-        # self.ps.move_to(np.array([
-        #     s1,
-        #     s2,
-        #     0
-        # ]))
+        self.graph.update_point_position(
+            position=(s1 + block2.get_width() + (block1.get_width() / 2) + .5, s2 + (block2.get_width() / 2)))
 
         block1.move_to(
             (shadow_wall_x + s1) * RIGHT + self.floor.get_top()[1] * UP,
